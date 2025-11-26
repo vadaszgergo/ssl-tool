@@ -44,7 +44,6 @@ Once running, access the application at:
 For local development without Docker:
 
 ```bash
-cd app
 python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
