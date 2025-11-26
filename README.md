@@ -21,7 +21,7 @@ docker-compose down
 
 ```bash
 # Build the image
-docker build -t ssl-tool-app ./app
+docker build -t ssl-tool-app .
 
 # Run the container
 docker run -d -p 8000:8000 --name ssl-tool-app ssl-tool-app
