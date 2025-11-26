@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSL Certificate Tools</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-gradient-start: #f8fafc;
+            --bg-gradient-end: #e2e8f0;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --card-bg: #ffffff;
+            --card-border: #e2e8f0;
+            --input-border: #cbd5e1;
+            --input-border-focus: #2563eb;
+            --tab-bg: #f1f5f9;
+            --tab-active-bg: #ffffff;
+            --success-bg: #d1fae5;
+            --success-border: #10b981;
+            --success-text: #065f46;
+            --error-bg: #fee2e2;
+            --error-border: #ef4444;
+            --error-text: #991b1b;
+            --warning-bg: #fef3c7;
+            --warning-border: #f59e0b;
+            --warning-text: #92400e;
+            --footer-text: #64748b;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #3b82f6;
+            --primary-hover: #2563eb;
+            --bg-gradient-start: #0f172a;
+            --bg-gradient-end: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --card-bg: #1e293b;
+            --card-border: #334155;
+            --input-border: #475569;
+            --input-border-focus: #3b82f6;
+            --tab-bg: #0f172a;
+            --tab-active-bg: #1e293b;
+            --success-bg: #064e3b;
+            --success-border: #10b981;
+            --success-text: #d1fae5;
+            --error-bg: #7f1d1d;
+            --error-border: #ef4444;
+            --error-text: #fee2e2;
+            --warning-bg: #78350f;
+            --warning-border: #f59e0b;
+            --warning-text: #fef3c7;
+            --footer-text: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--text-primary);
+            margin-bottom: 0;
+            font-size: 2.5em;
+            flex: 1;
+        }
+
+        .theme-toggle {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 8px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 20px;
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--primary-color);
+        }
+
+        .tabs-container {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+            border: 1px solid var(--card-border);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        .tabs-nav {
+            display: flex;
+            background: var(--tab-bg);
+            border-bottom: 2px solid var(--card-border);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 15px 20px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            border-bottom: 3px solid transparent;
+            transition: none;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .tab-button:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .tab-button.active {
+            background: var(--tab-active-bg);
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 25px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .tool-card {
+            background: white;
+            border-radius: 0;
+            padding: 0;
+            box-shadow: none;
+        }
+
+        .tab-content h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 12px;
+            border: 2px solid var(--input-border);
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            resize: vertical;
+            margin-bottom: 15px;
+            transition: border-color 0.3s ease;
+            background: var(--card-bg);
+            color: var(--text-primary);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--input-border-focus);
+        }
+
+        button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.2s ease;
+            font-weight: 600;
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .result.success {
+            background: var(--success-bg);
+            border: 1px solid var(--success-border);
+            color: var(--success-text);
+        }
+
+        .result.error {
+            background: var(--error-bg);
+            border: 1px solid var(--error-border);
+            color: var(--error-text);
+        }
+
+        .result h3 {
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .result-item {
+            margin: 8px 0;
+            padding: 8px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 4px;
+        }
+
+        .result-item strong {
+            color: var(--primary-color);
+        }
+
+        .match-success {
+            background: var(--success-bg);
+            border: 1px solid var(--success-border);
+            color: var(--success-text);
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .match-failure {
+            background: var(--error-bg);
+            border: 1px solid var(--error-border);
+            color: var(--error-text);
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .san-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .san-list li {
+            padding: 4px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .san-list li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .warning-box {
+            background: var(--warning-bg);
+            border: 2px solid var(--warning-border);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+            color: var(--warning-text);
+            font-size: 14px;
+        }
+
+        .warning-box strong {
+            color: var(--error-border);
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .copy-button {
+            background: var(--success-border);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s ease;
+        }
+
+        .copy-button:hover {
+            background: var(--primary-color);
+        }
+
+        .copy-button:active {
+            background: var(--primary-hover);
+        }
+
+        .result-textarea {
+            width: 100%;
+            min-height: 400px;
+            padding: 15px;
+            border: 2px solid var(--success-border);
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            background: var(--card-bg);
+            color: var(--success-text);
+            resize: vertical;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .copy-success {
+            display: inline-block;
+            margin-left: 10px;
+            color: var(--success-border);
+            font-weight: bold;
+            animation: fadeOut 2s forwards;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: var(--footer-text);
+            font-size: 14px;
+        }
+
+        footer a {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+
+        footer a:hover {
+            color: var(--primary-hover);
+        }
+
+        .cli-box {
+            background: var(--tab-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: var(--text-primary);
+        }
+
+        .cli-box strong {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        .cli-box code {
+            display: block;
+            white-space: pre;
+            overflow-x: auto;
+            margin: 5px 0;
+        }
+
+        label {
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-container">
+            <h1>🔒 SSL Certificate Tools</h1>
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                <span id="theme-icon">🌙</span>
+                <span id="theme-text">Dark</span>
+            </button>
+        </div>
+        
+        <div class="tabs-container">
+            <div class="tabs-nav">
+                <button class="tab-button active" onclick="switchTab('cert-decoder', this)">Certificate Decoder</button>
+                <button class="tab-button" onclick="switchTab('key-matcher', this)">Certificate & Key Matcher</button>
+                <button class="tab-button" onclick="switchTab('csr-decoder', this)">CSR Decoder</button>
+                <button class="tab-button" onclick="switchTab('cert-converter', this)">Certificate Converter</button>
+            </div>
+
+            <!-- Certificate Decoder Tab -->
+            <div id="cert-decoder" class="tab-content active">
+                <h2>SSL Certificate Decoder</h2>
+                <textarea id="certificate-input" placeholder="Paste your certificate (PEM format) here..."></textarea>
+                <button onclick="decodeCertificate()">Decode Certificate</button>
+                <div id="certificate-result" class="result"></div>
+            </div>
+
+            <!-- Certificate & Key Matcher Tab -->
+            <div id="key-matcher" class="tab-content">
+                <h2>Certificate & Key Matcher</h2>
+                <div class="warning-box">
+                    <strong>⚠️ Security Warning</strong>
+                    <div>This tool is for testing purposes only. <strong>NEVER paste production private keys</strong> to any website, including this one. Only use test/development keys that are not used in production environments.</div>
+                    <div style="margin-top: 10px;">Use this tool in your own docker environment for extra security: <a href="https://hub.docker.com/r/vadaszgergo/ssl-tool" target="_blank">https://hub.docker.com/r/vadaszgergo/ssl-tool</a></div>
+                </div>
+                <div class="cli-box">
+                    <strong>🔧 CLI Alternative (Run Locally):</strong>
+                    <code># Method 1: Compare modulus (RSA keys)
+openssl x509 -noout -modulus -in cert.pem | openssl md5
+openssl rsa -noout -modulus -in key.pem | openssl md5
+# If both outputs match, the certificate and key match
+</code>
+                </div>
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Certificate:</label>
+                <textarea id="match-cert-input" placeholder="Paste certificate here..."></textarea>
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Private Key:</label>
+                <textarea id="match-key-input" placeholder="Paste private key here..."></textarea>
+                <button onclick="checkMatch()">Check Match</button>
+                <div id="match-result" class="result"></div>
+            </div>
+
+            <!-- CSR Decoder Tab -->
+            <div id="csr-decoder" class="tab-content">
+                <h2>CSR Decoder</h2>
+                <textarea id="csr-input" placeholder="Paste your CSR (Certificate Signing Request) here..."></textarea>
+                <button onclick="decodeCSR()">Decode CSR</button>
+                <div id="csr-result" class="result"></div>
+            </div>
+
+            <!-- Certificate Converter Tab -->
+            <div id="cert-converter" class="tab-content">
+                <h2>Certificate Converter</h2>
+                <div class="warning-box">
+                    <strong>⚠️ Security Warning</strong>
+                    <div>This tool processes certificates and may handle private keys (for PFX/P12 files). <strong>NEVER paste production private keys</strong> to any website. Only use test/development certificates.</div>
+                    <div style="margin-top: 10px;">Use this tool in your own docker environment for extra security: <a href="https://hub.docker.com/r/vadaszgergo/ssl-tool" target="_blank">https://hub.docker.com/r/vadaszgergo/ssl-tool</a></div>
+                </div>
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Input Format:</label>
+                <select id="convert-input-format" style="width: 100%; padding: 8px; margin-bottom: 15px; border: 2px solid var(--input-border); border-radius: 8px; background: var(--card-bg); color: var(--text-primary);">
+                    <option value="auto">Auto-detect</option>
+                    <option value="pem">PEM</option>
+                    <option value="der">DER</option>
+                    <option value="crt">CRT</option>
+                    <option value="pfx">PFX/P12</option>
+                </select>
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Output Format:</label>
+                <select id="convert-output-format" style="width: 100%; padding: 8px; margin-bottom: 15px; border: 2px solid var(--input-border); border-radius: 8px; background: var(--card-bg); color: var(--text-primary);">
+                    <option value="pem">PEM</option>
+                    <option value="der">DER</option>
+                    <option value="crt">CRT</option>
+                    <option value="pfx">PFX/P12</option>
+                </select>
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Password (for PFX/P12 files):</label>
+                <input type="password" id="convert-password" placeholder="Leave empty if not password-protected" style="width: 100%; padding: 8px; margin-bottom: 15px; border: 2px solid var(--input-border); border-radius: 8px; background: var(--card-bg); color: var(--text-primary);">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Certificate Data:</label>
+                <div style="margin-bottom: 10px;">
+                    <input type="file" id="convert-file-input" accept=".pfx,.p12,.pem,.der,.crt,.cer" style="margin-bottom: 10px;">
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
+                        <strong>Or paste base64-encoded data:</strong> For PFX/P12 files, convert to base64 first using:<br>
+                        <code style="background: var(--tab-bg); padding: 2px 6px; border-radius: 4px;">base64 -i certificate.pfx | pbcopy</code> (macOS)<br>
+                        <code style="background: var(--tab-bg); padding: 2px 6px; border-radius: 4px;">base64 certificate.pfx</code> (Linux) - then copy the output
+                    </div>
+                </div>
+                <textarea id="convert-input" placeholder="Paste certificate data here (PEM, DER, CRT, or base64-encoded PFX/P12)..."></textarea>
+                <button onclick="convertCertificate()">Convert Certificate</button>
+                <div id="convert-result" class="result"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Theme management
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            setTheme(savedTheme);
+        }
+
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            const icon = document.getElementById('theme-icon');
+            const text = document.getElementById('theme-text');
+            
+            if (theme === 'dark') {
+                icon.textContent = '☀️';
+                text.textContent = 'Light';
+            } else {
+                icon.textContent = '🌙';
+                text.textContent = 'Dark';
+            }
+            
+            localStorage.setItem('theme', theme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            setTheme(newTheme);
+        }
+
+        // Initialize theme on page load
+        initTheme();
+
+        function switchTab(tabId, buttonElement) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Remove active class from all tab buttons
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(button => {
+                button.classList.remove('active');
+            });
+
+            // Show selected tab content
+            document.getElementById(tabId).classList.add('active');
+
+            // Add active class to clicked button
+            buttonElement.classList.add('active');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        async function decodeCertificate() {
+            const certText = document.getElementById('certificate-input').value.trim();
+            const resultDiv = document.getElementById('certificate-result');
+            
+            if (!certText) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = '<h3>Error</h3><p>Please paste a certificate.</p>';
+                resultDiv.style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/decode-certificate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ certificate: certText })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Create copy-friendly text format
+                    let copyText = 'Certificate Information\n';
+                    copyText += '=====================\n\n';
+                    copyText += `Common Name: ${data.common_name || 'N/A'}\n`;
+                    copyText += `Organization: ${data.organization || 'N/A'}\n`;
+                    copyText += `Organizational Unit: ${data.organizational_unit || 'N/A'}\n`;
+                    copyText += `Locality: ${data.locality || 'N/A'}\n`;
+                    copyText += `State/Province: ${data.state || 'N/A'}\n`;
+                    copyText += `Country: ${data.country || 'N/A'}\n`;
+                    copyText += `Serial Number: ${data.serial_number || 'N/A'}\n`;
+                    copyText += `Valid From: ${data.valid_from || 'N/A'}\n`;
+                    copyText += `Valid To: ${data.valid_to || 'N/A'}\n`;
+                    copyText += `Issuer CN: ${data.issuer_cn || 'N/A'}\n`;
+                    copyText += `Issuer Organization: ${data.issuer_org || 'N/A'}\n`;
+                    
+                    if (data.san && data.san.length > 0) {
+                        copyText += `\nSubject Alternative Names:\n`;
+                        data.san.forEach(san => {
+                            copyText += `  - ${san}\n`;
+                        });
+                    } else {
+                        copyText += `\nSubject Alternative Names: None\n`;
+                    }
+
+                    let html = '<h3>Certificate Information</h3>';
+                    html += `<textarea class="result-textarea" id="cert-result-text" readonly>${escapeHtml(copyText)}</textarea>`;
+                    html += `<button class="copy-button" onclick="copyToClipboard('cert-result-text', this)">📋 Copy All</button>`;
+                    html += '<span class="copy-success" id="cert-copy-success"></span>';
+                    
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = html;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `<h3>Error</h3><p>${data.error || 'Failed to decode certificate'}</p>`;
+                }
+                resultDiv.style.display = 'block';
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `<h3>Error</h3><p>${error.message}</p>`;
+                resultDiv.style.display = 'block';
+            }
+        }
+
+        async function checkMatch() {
+            const certText = document.getElementById('match-cert-input').value.trim();
+            const keyText = document.getElementById('match-key-input').value.trim();
+            const resultDiv = document.getElementById('match-result');
+            
+            if (!certText || !keyText) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = '<h3>Error</h3><p>Please paste both certificate and private key.</p>';
+                resultDiv.style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/check-match', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ certificate: certText, private_key: keyText })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (data.match) {
+                        resultDiv.className = 'match-success';
+                        resultDiv.innerHTML = '✅ ' + data.message;
+                    } else {
+                        resultDiv.className = 'match-failure';
+                        resultDiv.innerHTML = '❌ ' + data.message;
+                    }
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `<h3>Error</h3><p>${data.error || 'Failed to check match'}</p>`;
+                }
+                resultDiv.style.display = 'block';
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `<h3>Error</h3><p>${error.message}</p>`;
+                resultDiv.style.display = 'block';
+            }
+        }
+
+        async function decodeCSR() {
+            const csrText = document.getElementById('csr-input').value.trim();
+            const resultDiv = document.getElementById('csr-result');
+            
+            if (!csrText) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = '<h3>Error</h3><p>Please paste a CSR.</p>';
+                resultDiv.style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/decode-csr', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ csr: csrText })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Create copy-friendly text format
+                    let copyText = 'CSR Information\n';
+                    copyText += '===============\n\n';
+                    copyText += `Common Name: ${data.common_name || 'N/A'}\n`;
+                    copyText += `Organization: ${data.organization || 'N/A'}\n`;
+                    copyText += `Organizational Unit: ${data.organizational_unit || 'N/A'}\n`;
+                    copyText += `Locality: ${data.locality || 'N/A'}\n`;
+                    copyText += `State/Province: ${data.state || 'N/A'}\n`;
+                    copyText += `Country: ${data.country || 'N/A'}\n`;
+                    copyText += `Email: ${data.email || 'N/A'}\n`;
+                    copyText += `Key Type: ${data.key_type || 'N/A'}\n`;
+                    copyText += `Key Size: ${data.key_size ? data.key_size + ' bits' : 'N/A'}\n`;
+                    
+                    if (data.san && data.san.length > 0) {
+                        copyText += `\nSubject Alternative Names:\n`;
+                        data.san.forEach(san => {
+                            copyText += `  - ${san}\n`;
+                        });
+                    } else {
+                        copyText += `\nSubject Alternative Names: None\n`;
+                    }
+
+                    let html = '<h3>CSR Information</h3>';
+                    html += `<textarea class="result-textarea" id="csr-result-text" readonly>${escapeHtml(copyText)}</textarea>`;
+                    html += `<button class="copy-button" onclick="copyToClipboard('csr-result-text', this)">📋 Copy All</button>`;
+                    html += '<span class="copy-success" id="csr-copy-success"></span>';
+                    
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = html;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `<h3>Error</h3><p>${data.error || 'Failed to decode CSR'}</p>`;
+                }
+                resultDiv.style.display = 'block';
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `<h3>Error</h3><p>${error.message}</p>`;
+                resultDiv.style.display = 'block';
+            }
+        }
+
+        // Handle file upload for certificate converter
+        document.getElementById('convert-file-input').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const fileName = file.name.toLowerCase();
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const fileName = file.name.toLowerCase();
+                
+                // Determine format based on file extension
+                if (fileName.endsWith('.pfx') || fileName.endsWith('.p12')) {
+                    document.getElementById('convert-input-format').value = 'pfx';
+                    // Convert ArrayBuffer to base64
+                    const arrayBuffer = e.target.result;
+                    const bytes = new Uint8Array(arrayBuffer);
+                    let binary = '';
+                    for (let i = 0; i < bytes.length; i++) {
+                        binary += String.fromCharCode(bytes[i]);
+                    }
+                    const base64 = btoa(binary);
+                    document.getElementById('convert-input').value = base64;
+                } else if (fileName.endsWith('.pem')) {
+                    document.getElementById('convert-input-format').value = 'pem';
+                    document.getElementById('convert-input').value = e.target.result;
+                } else if (fileName.endsWith('.der') || fileName.endsWith('.crt') || fileName.endsWith('.cer')) {
+                    document.getElementById('convert-input-format').value = 'der';
+                    // Convert ArrayBuffer to base64
+                    const arrayBuffer = e.target.result;
+                    const bytes = new Uint8Array(arrayBuffer);
+                    let binary = '';
+                    for (let i = 0; i < bytes.length; i++) {
+                        binary += String.fromCharCode(bytes[i]);
+                    }
+                    const base64 = btoa(binary);
+                    document.getElementById('convert-input').value = base64;
+                } else {
+                    // Try to detect format
+                    const content = e.target.result;
+                    if (typeof content === 'string' && content.includes('BEGIN')) {
+                        document.getElementById('convert-input-format').value = 'pem';
+                        document.getElementById('convert-input').value = content;
+                    } else {
+                        // Assume binary, convert to base64
+                        const arrayBuffer = e.target.result;
+                        const bytes = new Uint8Array(arrayBuffer);
+                        let binary = '';
+                        for (let i = 0; i < bytes.length; i++) {
+                            binary += String.fromCharCode(bytes[i]);
+                        }
+                        const base64 = btoa(binary);
+                        document.getElementById('convert-input').value = base64;
+                    }
+                }
+            };
+            
+            // Read as ArrayBuffer for binary files, text for PEM
+            if (fileName.endsWith('.pfx') || fileName.endsWith('.p12') || fileName.endsWith('.der') || fileName.endsWith('.crt') || fileName.endsWith('.cer')) {
+                reader.readAsArrayBuffer(file);
+            } else {
+                reader.readAsText(file);
+            }
+        });
+
+        async function convertCertificate() {
+            const inputData = document.getElementById('convert-input').value.trim();
+            const inputFormat = document.getElementById('convert-input-format').value;
+            const outputFormat = document.getElementById('convert-output-format').value;
+            const password = document.getElementById('convert-password').value;
+            const resultDiv = document.getElementById('convert-result');
+            
+            if (!inputData) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = '<h3>Error</h3><p>Please upload a file or paste certificate data.</p>';
+                resultDiv.style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/convert-certificate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        input_data: inputData,
+                        input_format: inputFormat,
+                        output_format: outputFormat,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    let html = '<h3>Converted Certificate</h3>';
+                    html += `<p><strong>Format:</strong> ${outputFormat.toUpperCase()}</p>`;
+                    if (data.has_private_key) {
+                        html += '<p><strong>Note:</strong> Private key extracted separately below.</p>';
+                    }
+                    if (data.has_additional_certs) {
+                        html += '<p><strong>Note:</strong> This file contains additional certificates (certificate chain).</p>';
+                    }
+                    
+                    // Certificate output
+                    html += '<label style="display: block; margin-top: 15px; margin-bottom: 5px; font-weight: 600;">Certificate:</label>';
+                    html += `<textarea class="result-textarea" id="convert-result-text" readonly>${escapeHtml(data.output_data)}</textarea>`;
+                    html += `<button class="copy-button" onclick="copyToClipboard('convert-result-text', this)">📋 Copy Certificate</button>`;
+                    html += '<span class="copy-success" id="convert-copy-success"></span>';
+                    
+                    // Private key output (if available)
+                    if (data.output_key_data) {
+                        html += '<label style="display: block; margin-top: 15px; margin-bottom: 5px; font-weight: 600;">Private Key:</label>';
+                        html += `<textarea class="result-textarea" id="convert-key-text" readonly>${escapeHtml(data.output_key_data)}</textarea>`;
+                        html += `<button class="copy-button" onclick="copyToClipboard('convert-key-text', this)">📋 Copy Private Key</button>`;
+                        html += '<span class="copy-success" id="convert-key-copy-success"></span>';
+                    }
+                    
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = html;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `<h3>Error</h3><p>${data.error || 'Failed to convert certificate'}</p>`;
+                }
+                resultDiv.style.display = 'block';
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `<h3>Error</h3><p>${error.message}</p>`;
+                resultDiv.style.display = 'block';
+            }
+        }
+
+        function copyToClipboard(elementId, button) {
+            const textarea = document.getElementById(elementId);
+            if (!textarea) return;
+            
+            textarea.select();
+            textarea.setSelectionRange(0, 99999); // For mobile devices
+            
+            try {
+                document.execCommand('copy');
+                const successSpan = document.getElementById(elementId.replace('-text', '-copy-success'));
+                if (successSpan) {
+                    successSpan.textContent = '✓ Copied!';
+                    setTimeout(() => {
+                        successSpan.textContent = '';
+                    }, 2000);
+                }
+            } catch (err) {
+                // Fallback: use modern Clipboard API
+                navigator.clipboard.writeText(textarea.value).then(() => {
+                    const successSpan = document.getElementById(elementId.replace('-text', '-copy-success'));
+                    if (successSpan) {
+                        successSpan.textContent = '✓ Copied!';
+                        setTimeout(() => {
+                            successSpan.textContent = '';
+                        }, 2000);
+                    }
+                }).catch(err => {
+                    alert('Failed to copy. Please select and copy manually.');
+                });
+            }
+        }
+    </script>
+    <footer>
+        <p>For more technical articles, visit <a href="https://gergovadasz.hu" target="_blank" rel="noopener noreferrer">gergovadasz.hu</a></p>
+    </footer>
+</body>
+</html>
+
