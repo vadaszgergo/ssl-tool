@@ -6,71 +6,75 @@
     <title>SSL Certificate Tools</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #0f766e;
-            --primary-strong: #0d9488;
-            --accent: #f97316;
-            --bg-1: #e9f1ff;
-            --bg-2: #d1f2e6;
-            --text-1: #0f172a;
-            --text-2: #334155;
-            --panel: rgba(255, 255, 255, 0.9);
-            --panel-border: rgba(15, 118, 110, 0.08);
-            --muted-border: rgba(15, 23, 42, 0.08);
-            --shadow: 0 30px 90px rgba(15, 23, 42, 0.12);
-            --input: rgba(255, 255, 255, 0.75);
-            --input-border: rgba(15, 23, 42, 0.08);
-            --input-focus: rgba(15, 118, 110, 0.4);
-            --tab-bg: rgba(255, 255, 255, 0.65);
-            --tab-active: rgba(15, 118, 110, 0.08);
-            --success-bg: #ecfdf3;
-            --success-border: #10b981;
-            --success-text: #0f5132;
+            --primary: #0d7a3e;
+            --primary-strong: #0a9e4f;
+            --accent: #ff9900;
+            --bg-1: #f0f2f5;
+            --bg-2: #e8eaed;
+            --text-1: #1a1a2e;
+            --text-2: #555577;
+            --panel: #ffffff;
+            --panel-border: rgba(13, 122, 62, 0.15);
+            --muted-border: rgba(0, 0, 0, 0.1);
+            --shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            --input: #f8f9fa;
+            --input-border: rgba(0, 0, 0, 0.12);
+            --input-focus: rgba(13, 122, 62, 0.25);
+            --tab-bg: #e8eaed;
+            --tab-active: rgba(13, 122, 62, 0.08);
+            --success-bg: #e8f5e9;
+            --success-border: #0d7a3e;
+            --success-text: #0d5a2e;
             --error-bg: #fef2f2;
-            --error-border: #ef4444;
+            --error-border: #ff3333;
             --error-text: #7f1d1d;
-            --warning-bg: #fff7ed;
-            --warning-border: #f97316;
-            --warning-text: #7c2d12;
+            --warning-bg: #fff8e1;
+            --warning-border: #ff9900;
+            --warning-text: #7c4d00;
+            --dot-color: rgba(13, 122, 62, 0.08);
+            --input-text: #1a1a2e;
         }
 
         [data-theme="dark"] {
-            --primary: #5eead4;
-            --primary-strong: #2dd4bf;
-            --accent: #fb923c;
-            --bg-1: #0b1727;
-            --bg-2: #102235;
-            --text-1: #e2e8f0;
-            --text-2: #94a3b8;
-            --panel: rgba(16, 34, 53, 0.75);
-            --panel-border: rgba(94, 234, 212, 0.1);
-            --muted-border: rgba(148, 163, 184, 0.16);
-            --shadow: 0 30px 90px rgba(0, 0, 0, 0.5);
-            --input: rgba(14, 23, 42, 0.65);
-            --input-border: rgba(148, 163, 184, 0.25);
-            --input-focus: rgba(94, 234, 212, 0.35);
-            --tab-bg: rgba(15, 23, 42, 0.75);
-            --tab-active: rgba(94, 234, 212, 0.08);
-            --success-bg: #0f3d32;
-            --success-border: #34d399;
-            --success-text: #d1fae5;
-            --error-bg: #2a1313;
-            --error-border: #f87171;
-            --error-text: #fecdd3;
-            --warning-bg: #2c1b0f;
-            --warning-border: #fb923c;
-            --warning-text: #fed7aa;
+            --primary: #00ff41;
+            --primary-strong: #0aff99;
+            --accent: #ff9900;
+            --bg-1: #0a0e14;
+            --bg-2: #0c1018;
+            --text-1: #c5c8c6;
+            --text-2: #6a7a8a;
+            --panel: #1a1f2e;
+            --panel-border: rgba(0, 255, 65, 0.12);
+            --muted-border: rgba(0, 255, 65, 0.08);
+            --shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+            --input: #0d1117;
+            --input-border: rgba(0, 255, 65, 0.15);
+            --input-focus: rgba(0, 255, 65, 0.2);
+            --tab-bg: #0d1117;
+            --tab-active: rgba(0, 255, 65, 0.06);
+            --success-bg: rgba(0, 255, 65, 0.06);
+            --success-border: #00ff41;
+            --success-text: #0aff99;
+            --error-bg: rgba(255, 51, 51, 0.08);
+            --error-border: #ff3333;
+            --error-text: #ff6666;
+            --warning-bg: rgba(255, 153, 0, 0.08);
+            --warning-border: #ff9900;
+            --warning-text: #ffbb33;
+            --dot-color: rgba(0, 255, 65, 0.04);
+            --input-text: #00ff41;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Space Grotesk', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
-            background: radial-gradient(circle at 20% 20%, var(--bg-1), transparent 40%),
-                        radial-gradient(circle at 80% 0%, var(--bg-2), transparent 40%),
-                        linear-gradient(135deg, var(--bg-1), var(--bg-2));
+            font-family: 'JetBrains Mono', 'Fira Code', 'Source Code Pro', 'Courier New', monospace;
+            background-color: var(--bg-1);
+            background-image: radial-gradient(circle, var(--dot-color) 1px, transparent 1px);
+            background-size: 24px 24px;
             color: var(--text-1);
             min-height: 100vh;
             padding: 32px 20px 40px;
@@ -78,19 +82,7 @@
             overflow-x: hidden;
         }
 
-        .grid-blob {
-            position: absolute;
-            width: 520px;
-            height: 520px;
-            border-radius: 999px;
-            filter: blur(120px);
-            opacity: 0.35;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        .blob-1 { background: #0ea5e9; top: -120px; left: -120px; }
-        .blob-2 { background: #22c55e; top: 40%; right: -160px; }
+        .grid-blob { display: none; }
 
         .container {
             max-width: 1200px;
@@ -110,17 +102,36 @@
         .hero-title {
             display: flex;
             align-items: center;
-            gap: 12px;
-            color: var(--text-1);
+            gap: 0;
+            color: var(--primary);
             font-weight: 700;
             letter-spacing: -0.02em;
-            font-size: 32px;
+            font-size: 28px;
+        }
+
+        .hero-title .prompt {
+            color: var(--text-2);
+            margin-right: 8px;
+        }
+
+        .hero-title .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 24px;
+            background: var(--primary);
+            margin-left: 4px;
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
         }
 
         .eyebrow {
-            font-size: 12px;
+            font-size: 11px;
             text-transform: uppercase;
-            letter-spacing: 0.15em;
+            letter-spacing: 0.2em;
             color: var(--text-2);
             display: inline-flex;
             align-items: center;
@@ -132,6 +143,7 @@
             max-width: 780px;
             line-height: 1.6;
             margin-top: 8px;
+            font-size: 13px;
         }
 
         .pill-row {
@@ -142,94 +154,97 @@
         }
 
         .pill {
-            background: var(--tab-bg);
-            border: 1px solid var(--panel-border);
-            color: var(--text-1);
-            padding: 8px 12px;
-            border-radius: 999px;
-            font-size: 13px;
+            background: transparent;
+            border: 1px dashed var(--muted-border);
+            color: var(--text-2);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
             display: inline-flex;
             align-items: center;
             gap: 8px;
         }
 
         .theme-toggle {
-            background: var(--panel);
-            border: 1px solid var(--panel-border);
-            border-radius: 999px;
+            background: transparent;
+            border: 1px solid var(--muted-border);
+            border-radius: 4px;
             padding: 10px 16px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
             color: var(--text-1);
             transition: all 0.2s ease;
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            box-shadow: var(--shadow);
+            font-family: 'JetBrains Mono', monospace;
         }
 
-        .theme-toggle:hover { transform: translateY(-1px) scale(1.01); border-color: var(--primary); }
+        .theme-toggle:hover { border-color: var(--primary); color: var(--primary); }
 
         .surface {
             background: var(--panel);
             border: 1px solid var(--panel-border);
-            border-radius: 20px;
+            border-radius: 4px;
             box-shadow: var(--shadow);
             overflow: hidden;
-            backdrop-filter: blur(14px);
         }
 
         .tabs-nav {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 8px;
-            padding: 14px;
+            gap: 6px;
+            padding: 12px;
             background: var(--tab-bg);
             overflow-x: auto;
             scrollbar-width: thin;
             scrollbar-color: var(--primary) transparent;
+            border-bottom: 1px solid var(--panel-border);
         }
 
-        .tabs-nav::-webkit-scrollbar { height: 6px; }
-        .tabs-nav::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 99px; }
+        .tabs-nav::-webkit-scrollbar { height: 4px; }
+        .tabs-nav::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 2px; }
 
         .tab-button {
             border: 1px solid var(--muted-border);
             background: transparent;
-            color: var(--text-1);
-            padding: 12px 14px;
-            border-radius: 12px;
-            font-weight: 600;
+            color: var(--text-2);
+            padding: 10px 14px;
+            border-radius: 4px;
+            font-weight: 500;
             cursor: pointer;
             text-align: left;
             transition: all 0.2s ease;
             min-width: 170px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
         }
 
-        .tab-button:hover { border-color: var(--primary); transform: translateY(-1px); }
-        .tab-button.active { background: var(--tab-active); border-color: var(--primary); color: var(--primary-strong); box-shadow: inset 0 0 0 1px rgba(15,118,110,0.08); }
+        .tab-button:hover { border-color: var(--primary); color: var(--primary); }
+        .tab-button.active { background: var(--tab-active); border-color: var(--primary); color: var(--primary); }
 
         .tab-content { display: none; padding: 24px 24px 28px; }
         .tab-content.active { display: block; }
 
         h2 {
-            font-size: 24px;
+            font-size: 20px;
             margin-bottom: 8px;
-            color: var(--text-1);
+            color: var(--primary);
             letter-spacing: -0.01em;
+            font-weight: 600;
         }
 
-        .lede { color: var(--text-2); margin-bottom: 16px; }
+        .lede { color: var(--text-2); margin-bottom: 16px; font-size: 13px; }
 
         textarea, select, input[type="password"] {
             width: 100%;
             min-height: 140px;
             padding: 14px 16px;
             border: 1px solid var(--input-border);
-            border-radius: 12px;
+            border-radius: 4px;
             background: var(--input);
-            color: var(--text-1);
-            font-family: 'Space Grotesk', 'Inter', monospace;
+            color: var(--input-text);
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
             font-size: 13px;
             line-height: 1.5;
             resize: vertical;
@@ -242,7 +257,7 @@
         textarea:focus, select:focus, input[type="password"]:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 4px var(--input-focus);
+            box-shadow: 0 0 0 3px var(--input-focus);
         }
 
         label {
@@ -250,32 +265,34 @@
             font-weight: 600;
             color: var(--text-1);
             margin-bottom: 6px;
-            letter-spacing: -0.01em;
+            font-size: 13px;
         }
 
         button {
-            background: linear-gradient(135deg, var(--primary), var(--primary-strong));
-            color: #0b1c26;
-            border: none;
-            padding: 14px 22px;
-            border-radius: 12px;
-            font-size: 15px;
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 12px 22px;
+            border-radius: 4px;
+            font-size: 13px;
             cursor: pointer;
-            font-weight: 700;
-            letter-spacing: -0.01em;
-            transition: transform 0.15s ease, box-shadow 0.2s ease;
-            box-shadow: 0 14px 40px rgba(15, 118, 110, 0.25);
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.02em;
+            transition: all 0.2s ease;
+            box-shadow: none;
         }
 
-        button:hover { transform: translateY(-1px); box-shadow: 0 16px 42px rgba(15,118,110,0.35); }
+        button:hover { background: rgba(0, 255, 65, 0.06); box-shadow: 0 0 12px rgba(0, 255, 65, 0.15); }
         button:active { transform: translateY(0); }
 
         .result {
             margin-top: 18px;
             padding: 16px;
-            border-radius: 14px;
+            border-radius: 4px;
             display: none;
             border: 1px solid transparent;
+            font-size: 13px;
         }
 
         .result.success { background: var(--success-bg); border-color: var(--success-border); color: var(--success-text); }
@@ -283,7 +300,7 @@
 
         .match-success, .match-failure {
             margin-top: 18px;
-            border-radius: 14px;
+            border-radius: 4px;
             padding: 16px;
             font-weight: 700;
             text-align: center;
@@ -294,32 +311,35 @@
 
         .warning-box {
             background: var(--warning-bg);
-            border: 1px solid var(--warning-border);
-            border-radius: 14px;
+            border: 1px dashed var(--warning-border);
+            border-radius: 4px;
             padding: 14px 16px;
             margin: 12px 0 18px;
             color: var(--warning-text);
             line-height: 1.5;
+            font-size: 13px;
         }
 
         .warning-box strong { display: block; margin-bottom: 6px; color: var(--warning-border); }
 
         .cli-box {
             background: var(--tab-bg);
-            border: 1px dashed var(--muted-border);
-            border-radius: 12px;
+            border: 1px dashed var(--primary);
+            border-radius: 4px;
             padding: 12px 14px;
             margin: 12px 0 18px;
-            font-family: 'Space Grotesk', 'Inter', monospace;
+            font-family: 'JetBrains Mono', monospace;
             color: var(--text-1);
-            font-size: 13px;
+            font-size: 12px;
         }
 
         .cli-box strong {
-            color: var(--text-2);
+            color: var(--primary);
             letter-spacing: 0.01em;
             display: block;
             margin-bottom: 6px;
+            font-size: 11px;
+            text-transform: uppercase;
         }
 
         .cli-box code {
@@ -327,33 +347,37 @@
             white-space: pre;
             overflow-x: auto;
             padding: 10px 12px;
-            background: rgba(0,0,0,0.05);
-            border-radius: 10px;
+            background: var(--input);
+            border-radius: 4px;
             border: 1px solid var(--muted-border);
+            color: var(--input-text);
         }
 
         .copy-button {
-            background: linear-gradient(135deg, #0ea5e9, #22d3ee);
-            color: #04111a;
-            padding: 10px 16px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 700;
-            border: none;
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
             margin-top: 8px;
-            box-shadow: 0 10px 26px rgba(14,165,233,0.28);
+            box-shadow: none;
+            font-family: 'JetBrains Mono', monospace;
         }
+
+        .copy-button:hover { background: rgba(0, 255, 65, 0.06); box-shadow: 0 0 8px rgba(0, 255, 65, 0.15); }
 
         .result-textarea {
             width: 100%;
             min-height: 320px;
             padding: 14px;
             border: 1px solid var(--success-border);
-            border-radius: 12px;
-            font-family: 'Space Grotesk', 'Inter', monospace;
-            font-size: 13px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
             line-height: 1.6;
-            background: rgba(255,255,255,0.6);
+            background: var(--input);
             color: var(--success-text);
             resize: vertical;
             margin-top: 10px;
@@ -376,11 +400,103 @@
             margin-top: 36px;
             padding: 16px;
             color: var(--text-2);
-            font-size: 14px;
+            font-size: 13px;
+            font-family: 'JetBrains Mono', monospace;
         }
 
-        footer a { color: var(--primary); text-decoration: underline; }
-        footer a:hover { color: var(--primary-strong); }
+        footer a { color: var(--primary); text-decoration: none; }
+        footer a:hover { color: var(--primary-strong); text-decoration: underline; }
+
+        .sample-data-section {
+            margin: 12px 0 18px;
+            border: 1px dashed var(--muted-border);
+            border-radius: 4px;
+            background: transparent;
+        }
+
+        .sample-data-section summary {
+            padding: 12px 16px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-2);
+            font-size: 12px;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            user-select: none;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .sample-data-section summary::-webkit-details-marker { display: none; }
+
+        .sample-data-section summary::before {
+            content: '\25B6';
+            font-size: 9px;
+            transition: transform 0.2s ease;
+            color: var(--primary);
+        }
+
+        .sample-data-section[open] summary::before {
+            transform: rotate(90deg);
+        }
+
+        .sample-data-section .sample-list {
+            padding: 0 16px 14px;
+        }
+
+        .sample-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-top: 1px solid var(--muted-border);
+            flex-wrap: wrap;
+        }
+
+        .sample-item-info {
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .sample-item-label {
+            font-weight: 600;
+            font-size: 12px;
+            color: var(--text-1);
+        }
+
+        .sample-item-desc {
+            font-size: 11px;
+            color: var(--text-2);
+        }
+
+        .sample-btn {
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: none;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .sample-btn:hover { box-shadow: 0 0 8px rgba(0, 255, 65, 0.15); }
+
+        .sample-btn-load {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .sample-btn-copy {
+            background: transparent;
+            color: var(--text-2);
+            border: 1px solid var(--muted-border);
+        }
+
+        .sample-btn-copy:hover { border-color: var(--primary); color: var(--primary); }
 
         .meta-row {
             display: flex;
@@ -395,9 +511,8 @@
                 grid-template-columns: 1fr;
                 gap: 14px;
             }
-            .hero-title { font-size: 26px; }
+            .hero-title { font-size: 22px; }
             body { padding: 22px 14px 30px; }
-            .surface { border-radius: 16px; }
         }
 
         @media (max-width: 680px) {
@@ -407,7 +522,7 @@
                 grid-template-columns: none;
             }
             .tab-content { padding: 18px 18px 22px; }
-            textarea, select, input[type="password"] { min-height: 120px; font-size: 12px; }
+            textarea, select, input[type="password"] { min-height: 120px; font-size: 11px; }
             button { width: 100%; text-align: center; }
             .theme-toggle { justify-self: start; }
         }
@@ -419,13 +534,13 @@
     <div class="container">
         <header class="hero">
             <div>
-                <span class="eyebrow">SSL toolkit • modern UI</span>
-                <div class="hero-title">🔒 SSL Certificate Tools</div>
-                <p class="hero-copy">Decode, validate, and convert certificates with a privacy-first workflow. Everything runs in-memory and can be hosted locally for full control.</p>
+                <span class="eyebrow">// ssl toolkit</span>
+                <div class="hero-title"><span class="prompt">$</span> ssl-certificate-tools<span class="cursor"></span></div>
+                <p class="hero-copy">Decode, validate, and convert certificates. Privacy-first, in-memory processing. Self-host for full control.</p>
                 <div class="pill-row">
-                    <span class="pill">Zero persistence</span>
+                    <span class="pill">zero persistence</span>
                     <span class="pill">CSR, CRT, PFX/P12</span>
-                    <span class="pill">Live copy-ready outputs</span>
+                    <span class="pill">copy-ready outputs</span>
                 </div>
             </div>
             <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
@@ -436,15 +551,52 @@
         
         <div class="surface">
             <div class="tabs-nav">
-                <button class="tab-button active" onclick="switchTab('cert-decoder', this)">Certificate Decoder</button>
-                <button class="tab-button" onclick="switchTab('key-matcher', this)">Certificate & Key Matcher</button>
-                <button class="tab-button" onclick="switchTab('csr-decoder', this)">CSR Decoder</button>
-                <button class="tab-button" onclick="switchTab('cert-converter', this)">Certificate Converter</button>
+                <button class="tab-button active" onclick="switchTab('cert-decoder', this)">[ cert decode ]</button>
+                <button class="tab-button" onclick="switchTab('key-matcher', this)">[ key match ]</button>
+                <button class="tab-button" onclick="switchTab('csr-decoder', this)">[ csr decode ]</button>
+                <button class="tab-button" onclick="switchTab('cert-converter', this)">[ convert ]</button>
             </div>
 
             <div id="cert-decoder" class="tab-content active">
                 <h2>SSL Certificate Decoder</h2>
                 <p class="lede">Paste any PEM or DER certificate to see subject, issuer, SAN, validity, and serial details instantly.</p>
+                <details class="sample-data-section">
+                    <summary>Sample Test Data</summary>
+                    <div class="sample-list">
+                        <div class="sample-item">
+                            <div class="sample-item-info">
+                                <div class="sample-item-label">RSA Leaf Certificate</div>
+                                <div class="sample-item-desc">CN=sample.example.com, RSA 2048-bit, SAN included</div>
+                            </div>
+                            <button class="sample-btn sample-btn-load" onclick="loadSample('cert-decoder', 'rsaCert')">Load Sample</button>
+                            <button class="sample-btn sample-btn-copy" onclick="copySampleData('rsaCert', this)">Copy</button>
+                        </div>
+                        <div class="sample-item">
+                            <div class="sample-item-info">
+                                <div class="sample-item-label">EC Leaf Certificate</div>
+                                <div class="sample-item-desc">CN=ec-sample.example.com, P-256 curve</div>
+                            </div>
+                            <button class="sample-btn sample-btn-load" onclick="loadSample('cert-decoder', 'ecCert')">Load Sample</button>
+                            <button class="sample-btn sample-btn-copy" onclick="copySampleData('ecCert', this)">Copy</button>
+                        </div>
+                        <div class="sample-item">
+                            <div class="sample-item-info">
+                                <div class="sample-item-label">Root CA Certificate</div>
+                                <div class="sample-item-desc">Self-signed Root CA, RSA 2048-bit</div>
+                            </div>
+                            <button class="sample-btn sample-btn-load" onclick="loadSample('cert-decoder', 'rootCaCert')">Load Sample</button>
+                            <button class="sample-btn sample-btn-copy" onclick="copySampleData('rootCaCert', this)">Copy</button>
+                        </div>
+                        <div class="sample-item">
+                            <div class="sample-item-info">
+                                <div class="sample-item-label">Intermediate CA Certificate</div>
+                                <div class="sample-item-desc">Signed by Root CA, issues leaf certs</div>
+                            </div>
+                            <button class="sample-btn sample-btn-load" onclick="loadSample('cert-decoder', 'intermediateCaCert')">Load Sample</button>
+                            <button class="sample-btn sample-btn-copy" onclick="copySampleData('intermediateCaCert', this)">Copy</button>
+                        </div>
+                    </div>
+                </details>
                 <textarea id="certificate-input" placeholder="Paste your certificate (PEM format) here..."></textarea>
                 <button onclick="decodeCertificate()">Decode Certificate</button>
                 <div id="certificate-result" class="result"></div>
@@ -455,9 +607,35 @@
                 <p class="lede">Verify if a private key pairs with a certificate. Outputs a clear yes/no without persisting any material.</p>
                 <div class="warning-box">
                     <strong>⚠️ Security Notice</strong>
-                    <div>This is for testing only. <strong>Do not paste production private keys</strong>. Use disposable or development keys.</div>
+                    <div>This is for testing only. <strong>Do not paste production private keys.</strong> Use disposable or development keys.</div>
                     <div style="margin-top: 10px;">Run it locally for maximum isolation: <a href="https://hub.docker.com/r/vadaszgergo/ssl-tool" target="_blank">docker image</a></div>
                 </div>
+                <details class="sample-data-section">
+                    <summary>Sample Test Data</summary>
+                    <div class="sample-list">
+                        <div class="sample-item">
+                            <div class="sample-item-info">
+                                <div class="sample-item-label">RSA Pair (Match)</div>
+                                <div class="sample-item-desc">RSA cert + matching RSA private key</div>
+                            </div>
+                            <button class="sample-btn sample-btn-load" onclick="loadSample('key-matcher', 'rsaMatch')">Load Sample</button>
+                        </div>
+                        <div class="sample-item">
+                            <div class="sample-item-info">
+                                <div class="sample-item-label">EC Pair (Match)</div>
+                                <div class="sample-item-desc">EC cert + matching EC private key (P-256)</div>
+                            </div>
+                            <button class="sample-btn sample-btn-load" onclick="loadSample('key-matcher', 'ecMatch')">Load Sample</button>
+                        </div>
+                        <div class="sample-item">
+                            <div class="sample-item-info">
+                                <div class="sample-item-label">Mismatch</div>
+                                <div class="sample-item-desc">RSA cert + EC private key (should fail)</div>
+                            </div>
+                            <button class="sample-btn sample-btn-load" onclick="loadSample('key-matcher', 'mismatch')">Load Sample</button>
+                        </div>
+                    </div>
+                </details>
                 <div class="cli-box">
                     <strong>CLI alternative (local):</strong>
                     <code># Compare modulus (RSA keys)
@@ -476,6 +654,27 @@ openssl rsa -noout -modulus -in key.pem  | openssl md5
             <div id="csr-decoder" class="tab-content">
                 <h2>CSR Decoder</h2>
                 <p class="lede">Inspect a Certificate Signing Request to see CN, SAN, key type, and size before submission.</p>
+                <details class="sample-data-section">
+                    <summary>Sample Test Data</summary>
+                    <div class="sample-list">
+                        <div class="sample-item">
+                            <div class="sample-item-info">
+                                <div class="sample-item-label">RSA CSR</div>
+                                <div class="sample-item-desc">CN=sample.example.com, RSA 2048-bit with SAN</div>
+                            </div>
+                            <button class="sample-btn sample-btn-load" onclick="loadSample('csr-decoder', 'rsaCsr')">Load Sample</button>
+                            <button class="sample-btn sample-btn-copy" onclick="copySampleData('rsaCsr', this)">Copy</button>
+                        </div>
+                        <div class="sample-item">
+                            <div class="sample-item-info">
+                                <div class="sample-item-label">EC CSR</div>
+                                <div class="sample-item-desc">CN=ec-sample.example.com, P-256 curve</div>
+                            </div>
+                            <button class="sample-btn sample-btn-load" onclick="loadSample('csr-decoder', 'ecCsr')">Load Sample</button>
+                            <button class="sample-btn sample-btn-copy" onclick="copySampleData('ecCsr', this)">Copy</button>
+                        </div>
+                    </div>
+                </details>
                 <textarea id="csr-input" placeholder="Paste your CSR (Certificate Signing Request) here..."></textarea>
                 <button onclick="decodeCSR()">Decode CSR</button>
                 <div id="csr-result" class="result"></div>
@@ -489,6 +688,34 @@ openssl rsa -noout -modulus -in key.pem  | openssl md5
                     <div>Converter may handle private keys when PFX/P12 files are provided. Use non-production material or host locally.</div>
                     <div style="margin-top: 10px;">Self-host: <a href="https://hub.docker.com/r/vadaszgergo/ssl-tool" target="_blank">docker image</a></div>
                 </div>
+                <details class="sample-data-section">
+                    <summary>Sample Test Data</summary>
+                    <div class="sample-list">
+                        <div class="sample-item">
+                            <div class="sample-item-info">
+                                <div class="sample-item-label">PEM Certificate</div>
+                                <div class="sample-item-desc">RSA leaf cert in PEM format, convert to DER/PFX</div>
+                            </div>
+                            <button class="sample-btn sample-btn-load" onclick="loadSample('cert-converter', 'pemCert')">Load Sample</button>
+                            <button class="sample-btn sample-btn-copy" onclick="copySampleData('rsaCert', this)">Copy</button>
+                        </div>
+                        <div class="sample-item">
+                            <div class="sample-item-info">
+                                <div class="sample-item-label">PEM Cert + Key (to PFX)</div>
+                                <div class="sample-item-desc">RSA cert + private key pasted together, convert to PFX</div>
+                            </div>
+                            <button class="sample-btn sample-btn-load" onclick="loadSample('cert-converter', 'pemToFfx')">Load Sample</button>
+                        </div>
+                        <div class="sample-item">
+                            <div class="sample-item-info">
+                                <div class="sample-item-label">PFX/P12 Bundle (to PEM)</div>
+                                <div class="sample-item-desc">RSA cert + key + chain, no password, base64-encoded</div>
+                            </div>
+                            <button class="sample-btn sample-btn-load" onclick="loadSample('cert-converter', 'pfxBundle')">Load Sample</button>
+                            <button class="sample-btn sample-btn-copy" onclick="copySampleData('pfxBundle', this)">Copy</button>
+                        </div>
+                    </div>
+                </details>
                 <label>Input Format</label>
                 <select id="convert-input-format">
                     <option value="auto">Auto-detect</option>
@@ -510,12 +737,13 @@ openssl rsa -noout -modulus -in key.pem  | openssl md5
                 <div style="margin-bottom: 10px;">
                     <input type="file" id="convert-file-input" accept=".pfx,.p12,.pem,.der,.crt,.cer" style="margin-bottom: 10px;">
                     <div style="font-size: 12px; color: var(--text-2); margin-bottom: 10px;">
-                        <strong>Base64 hint:</strong> For PFX/P12, convert to base64 first:
+                        <strong>PEM to PFX:</strong> Paste both the certificate and private key into the text area below. Order does not matter.
+                        <br><strong>PFX to PEM:</strong> Upload the .pfx/.p12 file above, or paste base64-encoded content:
                         <br><code style="background: var(--tab-bg); padding: 4px 8px; border-radius: 8px;">base64 -i certificate.pfx | pbcopy</code> (macOS)
-                        <br><code style="background: var(--tab-bg); padding: 4px 8px; border-radius: 8px;">base64 certificate.pfx</code> (Linux)
+                        &nbsp;<code style="background: var(--tab-bg); padding: 4px 8px; border-radius: 8px;">base64 certificate.pfx</code> (Linux)
                     </div>
                 </div>
-                <textarea id="convert-input" placeholder="Paste certificate data here (PEM, DER, CRT, or base64-encoded PFX/P12)..."></textarea>
+                <textarea id="convert-input" placeholder="Paste certificate data here (PEM, DER, CRT, or base64-encoded PFX/P12).&#10;&#10;For PEM to PFX conversion, paste both the certificate and private key together (any order)."></textarea>
                 <button onclick="convertCertificate()">Convert Certificate</button>
                 <div id="convert-result" class="result"></div>
             </div>
@@ -524,7 +752,7 @@ openssl rsa -noout -modulus -in key.pem  | openssl md5
 
     <script>
         function initTheme() {
-            const savedTheme = localStorage.getItem('theme') || 'light';
+            const savedTheme = localStorage.getItem('theme') || 'dark';
             setTheme(savedTheme);
         }
 
@@ -551,6 +779,211 @@ openssl rsa -noout -modulus -in key.pem  | openssl md5
         }
 
         initTheme();
+
+        const SAMPLE_DATA = {
+            rsaCert: `-----BEGIN CERTIFICATE-----
+MIIDtDCCApygAwIBAgIUAdjNy5uEK/pW9vmhymdZ2oiEuf8wDQYJKoZIhvcNAQEL
+BQAwczEfMB0GA1UEAwwWU2FtcGxlIEludGVybWVkaWF0ZSBDQTEWMBQGA1UECgwN
+U2FtcGxlIENBIE9yZzELMAkGA1UEBhMCVVMxEzARBgNVBAgMCkNhbGlmb3JuaWEx
+FjAUBgNVBAcMDVNhbiBGcmFuY2lzY28wHhcNMjQwMTAxMDAwMDAwWhcNMzUxMjMx
+MjM1OTU5WjBsMRswGQYDVQQDDBJzYW1wbGUuZXhhbXBsZS5jb20xEzARBgNVBAoM
+ClNhbXBsZSBPcmcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMRYw
+FAYDVQQHDA1TYW4gRnJhbmNpc2NvMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIB
+CgKCAQEAoH55LwUUEV/7n3yotxiS0DDCpS/TXHyJlHLqunAcKkJuWiNyy7lJWtUA
+IRr3eAFLxInpABSVlUZVg4nX7k/oiOiFpNHlUHNBvPgfAwQMDn7KD02yCV5R9LT0
+0wFHEYdIHnwU/WDV3i85VwWtbClJjEhOEkaC/5hMaaW3vKQCb0gRJn53+qILLCZr
+iZPrgPMSm2P8LyR4OxIolT/OjxipQtjB16s/vmz4PUAuwsEeBiFgbiVr6THLtV+r
+j12+4/M18T3Vb5Ezom53WKHaWjkX8NvMPV3mAVNrxSmdQ6r9ck8VeZx/5jPxPEFU
+tR1Ot9pyK6u2dYtsoMKIX74cghB0gwIDAQABo0cwRTAMBgNVHRMBAf8EAjAAMDUG
+A1UdEQQuMCyCEnNhbXBsZS5leGFtcGxlLmNvbYIWd3d3LnNhbXBsZS5leGFtcGxl
+LmNvbTANBgkqhkiG9w0BAQsFAAOCAQEAPWtO2If/52FkZlFPxlYMPdxClRTfk/ma
+CTwB33hQcMh7nKlx7recwgfkdPsdZ6z/cS5722Pcn31kDCnQoF33apmk8OuAzTz2
+mYz9Dosb/aAZu5oUc0SGxZxfOUprSdWryJzqwiA/ERo1nFjMGozUw00dK3RNlh4e
+M/ceVe8826ozCZKTuD5LBX8c0iZc0eeiBSeoqa8ivtZZQg6Z4EJkoVqoThKrfi6d
+aSTgQR+PYo3ZDLKMjKKsQbJoq+u6Oda9Hic2u9XzTPveyMrNNvM2vuaZrpVZeC1I
+nCQe0ab5L4zWddmtP+QwvsREZLu5/l2VsTAkVYibBNyAPRSVSd3s+g==
+-----END CERTIFICATE-----`,
+            rsaKey: `-----BEGIN RSA PRIVATE KEY-----
+MIIEogIBAAKCAQEAoH55LwUUEV/7n3yotxiS0DDCpS/TXHyJlHLqunAcKkJuWiNy
+y7lJWtUAIRr3eAFLxInpABSVlUZVg4nX7k/oiOiFpNHlUHNBvPgfAwQMDn7KD02y
+CV5R9LT00wFHEYdIHnwU/WDV3i85VwWtbClJjEhOEkaC/5hMaaW3vKQCb0gRJn53
++qILLCZriZPrgPMSm2P8LyR4OxIolT/OjxipQtjB16s/vmz4PUAuwsEeBiFgbiVr
+6THLtV+rj12+4/M18T3Vb5Ezom53WKHaWjkX8NvMPV3mAVNrxSmdQ6r9ck8VeZx/
+5jPxPEFUtR1Ot9pyK6u2dYtsoMKIX74cghB0gwIDAQABAoIBAEtn0LkSSkD1l0vy
+LnTEM2pklnc1FrnL+3oHWhiZhuomByILqKpmFjx6ehKT0HSOK1Ketx3mDfeyMYhZ
+Ud4yph75HJ15TqPzWw4Vh8CLfLysvnPdPcpgCeKOyL6AyarHJE/KXbREdIdtKaQk
+0zvP1DH4YNH+VhsPq8sxZLfZWRl+A8+bmXG2OswqYnhb3QMMdtaIUCBE7Y1c+i++
+BukwfwIdO5M3lkGZrpoBJa5mzEwU6taQyT15wYXdPNnZou7xUi71rCmuSoNSGAti
+H+jhyanuT9Rdl/5MZ3Faw5eiMyT/EZRGU15XjbEJAoI5jMlMI+dCoQaQo+tXXfaT
+Xf31+lkCgYEA30rtgVBpqeXrhqNH/YjZZrEcnOjJuzSbNcbtWVoQrGGNYVAnbe+A
+RMJugbgeahQ/y6jmGDJpsFV1RYxLx4QgIN7/xWTrtTxW559bP8/sJKpub2Oi8HZ0
+at1ThgZe/VtnXgm8OtaY6SL8+o7D5PPK2TTvvZItu68JF/T5nkV7U4kCgYEAuAC1
+sKvLVn3x15p/2OkaICcpLKmrLoq9Z6cqZlkn/rh+59K+HhAGC2pK/fYM4Q65iZnO
+R3xxRpTZPJQagr6/UJSWCksvI3BRPaTlldrxz+FzLilv5cSAFb8iKxcFYhsEz4ph
+vxNY9+xQ1uHtyd5TTg9PZLTX/XD775z4ApjAaKsCgYBvYd3VWnpKsJDq6Tn44zGm
+wwRF1O0D//rIOYGdx4p3onW2rBfvA8AVDHO5K1Goko88FPUp7sO/nPFRjukiDetE
+2lf1bCETl5S2F0yaKSpfI9DQqX/WuQ/bWqnWOglaEiUeyHZnVzKRYM2WYm6fH2j5
+LinEg01iyK4dkCqP45LgGQKBgDe5B0zsidS0qXO4tzTyStYn5eE/tLaQj5F/X2jF
+YUZTiyMbgDXMdngohXNpezcA5ZFVQdIGTquoUi11UJ39tCRsCxAs+qaJ0iCP+nMq
+bgadaOs240s6+escCfXwr9GpCwjrCHT8H/pc15Jrsz5qFOJT4qBF4A9BkxpaeAUZ
+S1OnAoGAbiKkwohYbDeakf3/y9Un5KKfeE1+zq6L1KA8kgioP5QHSG9Sq9DW6OZT
+BZ8V9121MFEH3tQfVhJ3KoSJyCOTgDnvyShVZYKB1GXizoZKplmxUDXrClnlO68W
+z3XOwvns0kKmOOQbvbRW2YfFyJdwrOhzoEDc+Cv0vJ6F/om9SRo=
+-----END RSA PRIVATE KEY-----`,
+            rsaCsr: `-----BEGIN CERTIFICATE REQUEST-----
+MIIC+TCCAeECAQAwbDEbMBkGA1UEAwwSc2FtcGxlLmV4YW1wbGUuY29tMRMwEQYD
+VQQKDApTYW1wbGUgT3JnMQswCQYDVQQGEwJVUzETMBEGA1UECAwKQ2FsaWZvcm5p
+YTEWMBQGA1UEBwwNU2FuIEZyYW5jaXNjbzCCASIwDQYJKoZIhvcNAQEBBQADggEP
+ADCCAQoCggEBAKB+eS8FFBFf+598qLcYktAwwqUv01x8iZRy6rpwHCpCblojcsu5
+SVrVACEa93gBS8SJ6QAUlZVGVYOJ1+5P6IjohaTR5VBzQbz4HwMEDA5+yg9Nsgle
+UfS09NMBRxGHSB58FP1g1d4vOVcFrWwpSYxIThJGgv+YTGmlt7ykAm9IESZ+d/qi
+Cywma4mT64DzEptj/C8keDsSKJU/zo8YqULYwderP75s+D1ALsLBHgYhYG4la+kx
+y7Vfq49dvuPzNfE91W+RM6Jud1ih2lo5F/DbzD1d5gFTa8UpnUOq/XJPFXmcf+Yz
+8TxBVLUdTrfaciurtnWLbKDCiF++HIIQdIMCAwEAAaBIMEYGCSqGSIb3DQEJDjE5
+MDcwNQYDVR0RBC4wLIISc2FtcGxlLmV4YW1wbGUuY29tghZ3d3cuc2FtcGxlLmV4
+YW1wbGUuY29tMA0GCSqGSIb3DQEBCwUAA4IBAQAJrzKnhSbDHUK/VNesvDAt/yyD
+GGct+48yVg8SUTU6zBHZoRgZEg36CUI7IdluEUv+1wRKL0B9T6pIlQhVgkAAR+b1
+k79pN9Xc1AaTta6WWwFG9yspEiq2/BVtHRP+2PW2iNcon7mwWz7Wm9P7RhmjvCBG
+92piynUBXKDakcmiInL6NBtjWArVpKUNTYuLatoLyeXjDftHeRFMRdYVP9xTRjxv
+13XlzSF9L1xcXdchFKuyhPa5MFG2jDFxSWZSw1kCEZzPg3KUuQFHq71vbR8GTb5d
+3SMo0PCtPKbAfIbn++n1YfNoMB3fR1AfNCbkRyxZlukfApexvfWl6Fi4B7Pb
+-----END CERTIFICATE REQUEST-----`,
+            ecCert: `-----BEGIN CERTIFICATE-----
+MIIC1zCCAb+gAwIBAgIUdQvfbiYZUXu1k2K+oERH9gM2sN4wDQYJKoZIhvcNAQEL
+BQAwczEfMB0GA1UEAwwWU2FtcGxlIEludGVybWVkaWF0ZSBDQTEWMBQGA1UECgwN
+U2FtcGxlIENBIE9yZzELMAkGA1UEBhMCVVMxEzARBgNVBAgMCkNhbGlmb3JuaWEx
+FjAUBgNVBAcMDVNhbiBGcmFuY2lzY28wHhcNMjQwMTAxMDAwMDAwWhcNMzUxMjMx
+MjM1OTU5WjBvMR4wHAYDVQQDDBVlYy1zYW1wbGUuZXhhbXBsZS5jb20xEzARBgNV
+BAoMClNhbXBsZSBPcmcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlh
+MRYwFAYDVQQHDA1TYW4gRnJhbmNpc2NvMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcD
+QgAE1ynqIxdV+OScRp7mBAX+sTC2gkLXOOGqxWp46w2Z3yn/Awc4LbBYYghYrHOX
+Mzk9m3B/f9Ox87rMniosoH0ur6MyMDAwDAYDVR0TAQH/BAIwADAgBgNVHREEGTAX
+ghVlYy1zYW1wbGUuZXhhbXBsZS5jb20wDQYJKoZIhvcNAQELBQADggEBAKAmbA/Z
+Q2Fy9PNCyNiTtWVbbeQLuKfauy+FvCwj3+AgpANUWedNAdItOHqlEyovRRnMP5ip
+2BoCAOQjhE1fUAmgYXNYFAfLh8bVQirVfHKDskTRZ8OIpq2xmQgY0KY9HSt5O8z2
+JHriicog0HDNNhyngP5ebIp7+JTb/3dxnApHoRNxWnYkS1HZ4aWNqLZbvcAu+7gw
+txH3BDw+veqVJaTrLZZRY73LThfehUkju2OSXZOWhcTaNYalKfJYDH2RhJgwmfu1
+uy9lGB9lCKs8K7mGimj+XrvFO3i3qarXblZ0Z8h+D0uGF8mxrMHP4+280MPgbmPV
+r+vVEPgbj5oHVjU=
+-----END CERTIFICATE-----`,
+            ecKey: `-----BEGIN EC PRIVATE KEY-----
+MHcCAQEEIKKRYDscdcRejgsqTnuU3N8/Uj1boCkFx+7lZDbKWF27oAoGCCqGSM49
+AwEHoUQDQgAE1ynqIxdV+OScRp7mBAX+sTC2gkLXOOGqxWp46w2Z3yn/Awc4LbBY
+YghYrHOXMzk9m3B/f9Ox87rMniosoH0urw==
+-----END EC PRIVATE KEY-----`,
+            ecCsr: `-----BEGIN CERTIFICATE REQUEST-----
+MIIBXzCCAQQCAQAwbzEeMBwGA1UEAwwVZWMtc2FtcGxlLmV4YW1wbGUuY29tMRMw
+EQYDVQQKDApTYW1wbGUgT3JnMQswCQYDVQQGEwJVUzETMBEGA1UECAwKQ2FsaWZv
+cm5pYTEWMBQGA1UEBwwNU2FuIEZyYW5jaXNjbzBZMBMGByqGSM49AgEGCCqGSM49
+AwEHA0IABNcp6iMXVfjknEae5gQF/rEwtoJC1zjhqsVqeOsNmd8p/wMHOC2wWGII
+WKxzlzM5PZtwf3/TsfO6zJ4qLKB9Lq+gMzAxBgkqhkiG9w0BCQ4xJDAiMCAGA1Ud
+EQQZMBeCFWVjLXNhbXBsZS5leGFtcGxlLmNvbTAKBggqhkjOPQQDAgNJADBGAiEA
+kqLbbpQAo1ujkxUjc3gQ4SCPMo7ZKKAjpsbKvMU54L0CIQD9J0O8gw7+rhvdySEc
+9hLWXWXfgShACpKRjSfgWKsdNA==
+-----END CERTIFICATE REQUEST-----`,
+            rootCaCert: `-----BEGIN CERTIFICATE-----
+MIIDhzCCAm+gAwIBAgIUOcZvY6bPzo6e7U7nnqvqoM/l/GcwDQYJKoZIhvcNAQEL
+BQAwazEXMBUGA1UEAwwOU2FtcGxlIFJvb3QgQ0ExFjAUBgNVBAoMDVNhbXBsZSBD
+QSBPcmcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMRYwFAYDVQQH
+DA1TYW4gRnJhbmNpc2NvMB4XDTI0MDEwMTAwMDAwMFoXDTM1MTIzMTIzNTk1OVow
+azEXMBUGA1UEAwwOU2FtcGxlIFJvb3QgQ0ExFjAUBgNVBAoMDVNhbXBsZSBDQSBP
+cmcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMRYwFAYDVQQHDA1T
+YW4gRnJhbmNpc2NvMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtEVT
+NRnPFYXha5CXLvEYACGTYL0cbmubgkf9AFUPGobriNzqJxKfDeTlebnawk1Z5hHV
+8frT4Zo5Sgy31mGaohW/yAI7lWhAABwZXlNqbS543mo/Z1eqej+kLLNYG3X9u07s
+MXbpM4betZ7CA0reiNFjC0f/zAQmZSh3gMnwJK2bAq91kqdwFPK6kkB1nF5R3QLl
+H7XheBAi+dzh+Ix5IUFmEutDs7OyR7HU6NU7P8nYAJ2AV84im6GTuXAu3UEkHlad
+xo8ysFhZEoggTBt3bT/G3WJa2FB72WUnGtX7uISEsH+yF5XJ+qito3tzrmppIbQW
+tLoCMp8mFD1/StmkTwIDAQABoyMwITAPBgNVHRMBAf8EBTADAQH/MA4GA1UdDwEB
+/wQEAwIBhjANBgkqhkiG9w0BAQsFAAOCAQEADeW/FPOwLBq6kPwuzuwttg6oaT+S
+4hxNaZM7HtKK0+miN3mm+cq7Rg/erL5/WXTVVlhFMVyCqZoWJGhayOabvWVEJ/vD
+4HGuPLItoFatnaurWQdvV0pzGMmtma4SzARwpXBUqP5xJFjne3HE1hnWRyBr51hP
+L/wx/u2Ss+cSuSP3FajGOX5TD3OwqNO9oQiPmfBShZyauj2fYaTTC/opdx0OOlfw
+hocVnG5fW2RlYEZSrkIq7/B7ZJUs9AhZbW6dJ9Cfi7pHIKMUgnj5GkgCWXGRtigp
+w+mauVjSHgnlx8NgRTH0F1T8LR6qGIQlPzfoBKW4fNF4/bxdKSZIxAycdg==
+-----END CERTIFICATE-----`,
+            intermediateCaCert: `-----BEGIN CERTIFICATE-----
+MIIDkjCCAnqgAwIBAgIUPxPB3qLs4uvChp6kXM4ODCLTTPUwDQYJKoZIhvcNAQEL
+BQAwazEXMBUGA1UEAwwOU2FtcGxlIFJvb3QgQ0ExFjAUBgNVBAoMDVNhbXBsZSBD
+QSBPcmcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMRYwFAYDVQQH
+DA1TYW4gRnJhbmNpc2NvMB4XDTI0MDEwMTAwMDAwMFoXDTM1MTIzMTIzNTk1OVow
+czEfMB0GA1UEAwwWU2FtcGxlIEludGVybWVkaWF0ZSBDQTEWMBQGA1UECgwNU2Ft
+cGxlIENBIE9yZzELMAkGA1UEBhMCVVMxEzARBgNVBAgMCkNhbGlmb3JuaWExFjAU
+BgNVBAcMDVNhbiBGcmFuY2lzY28wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
+AoIBAQC5tZHKPqkQbaUTyLVAFs9zWAQT+QVP6Lx65qGCRRd1irBR/2NqkGNktqbW
+znR0aLGtFXfVsRNQBZ6Ava9r7tWQLKeHYUaAkCpkbHoYmOaAyaJU/i6lD/5fsAuR
+2MuzcAme0W0YsHCL/VcnJPtIRzioBdHX6ZJhWpsIQYJ8LAv3HdarbwqaFlXh5CWW
+X4v4txFdyG5wfJw4FUZv35+x/J35OYJ3nd5AN1f3Fou8v8/fvuHZ3d+MZ+34C62p
+jwLIHTRrRfzRMZ9kOhi45Z7DxEhKZiqrDYxNEzx7WTdsGFwroQIjeBS8R2RFvbca
+W8zjZB8vIcXvr12XGhpbCbDGE5nxAgMBAAGjJjAkMBIGA1UdEwEB/wQIMAYBAf8C
+AQAwDgYDVR0PAQH/BAQDAgGGMA0GCSqGSIb3DQEBCwUAA4IBAQBPipBU9ZEmp5KU
+6IkFbl/RU2qXyER8rr6mZExUcY4h5b/6iD4S6qH/6Hws7eC00VtUgXenWvxeCNiK
+bZaU2Rk544g35whxNkw2LA/Bt2gEWipWo/l7Gs/S5/KxsyVgDg+mvXYbLwbKnmrx
+ocUeYl1Ye+t5H/DUY0YKDJHUh6LWVsvU3Vw31uSfgoZXPnDt5c64S3XaWFvLs1yV
+uS716yyNe54ZS2DGZrzzMombbc75efpDe5G2bdjTq+e1McqtbzBqN0DnSlCInQIF
+ecXfEPosAN12QYiV/KMviXnqQVOw5TzGBQITnBM/M6S2x0yZyBLxMDHBy8p8FqTE
+TKMopdu5
+-----END CERTIFICATE-----`,
+            pfxBundle: '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',
+        };
+
+        function loadSample(tabId, sampleKey) {
+            switch (tabId) {
+                case 'cert-decoder':
+                    document.getElementById('certificate-input').value = SAMPLE_DATA[sampleKey];
+                    break;
+                case 'key-matcher':
+                    if (sampleKey === 'rsaMatch') {
+                        document.getElementById('match-cert-input').value = SAMPLE_DATA.rsaCert;
+                        document.getElementById('match-key-input').value = SAMPLE_DATA.rsaKey;
+                    } else if (sampleKey === 'ecMatch') {
+                        document.getElementById('match-cert-input').value = SAMPLE_DATA.ecCert;
+                        document.getElementById('match-key-input').value = SAMPLE_DATA.ecKey;
+                    } else if (sampleKey === 'mismatch') {
+                        document.getElementById('match-cert-input').value = SAMPLE_DATA.rsaCert;
+                        document.getElementById('match-key-input').value = SAMPLE_DATA.ecKey;
+                    }
+                    break;
+                case 'csr-decoder':
+                    document.getElementById('csr-input').value = SAMPLE_DATA[sampleKey];
+                    break;
+                case 'cert-converter':
+                    if (sampleKey === 'pemCert') {
+                        document.getElementById('convert-input').value = SAMPLE_DATA.rsaCert;
+                        document.getElementById('convert-input-format').value = 'pem';
+                        document.getElementById('convert-output-format').value = 'der';
+                    } else if (sampleKey === 'pemToFfx') {
+                        document.getElementById('convert-input').value = SAMPLE_DATA.rsaCert + '\n' + SAMPLE_DATA.rsaKey;
+                        document.getElementById('convert-input-format').value = 'pem';
+                        document.getElementById('convert-output-format').value = 'pfx';
+                    } else if (sampleKey === 'pfxBundle') {
+                        document.getElementById('convert-input').value = SAMPLE_DATA.pfxBundle;
+                        document.getElementById('convert-input-format').value = 'pfx';
+                        document.getElementById('convert-output-format').value = 'pem';
+                    }
+                    break;
+            }
+        }
+
+        function copySampleData(sampleKey, button) {
+            const data = SAMPLE_DATA[sampleKey];
+            if (!data) return;
+            navigator.clipboard.writeText(data).then(() => {
+                const orig = button.textContent;
+                button.textContent = 'Copied!';
+                setTimeout(() => { button.textContent = orig; }, 1500);
+            }).catch(() => {
+                const ta = document.createElement('textarea');
+                ta.value = data;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                const orig = button.textContent;
+                button.textContent = 'Copied!';
+                setTimeout(() => { button.textContent = orig; }, 1500);
+            });
+        }
 
         function switchTab(tabId, buttonElement) {
             const tabContents = document.querySelectorAll('.tab-content');
@@ -853,37 +1286,32 @@ openssl rsa -noout -modulus -in key.pem  | openssl md5
         function copyToClipboard(elementId, button) {
             const textarea = document.getElementById(elementId);
             if (!textarea) return;
-            
-            textarea.select();
-            textarea.setSelectionRange(0, 99999); // For mobile devices
-            
-            try {
-                document.execCommand('copy');
-                const successSpan = document.getElementById(elementId.replace('-text', '-copy-success'));
+
+            const successSpan = document.getElementById(elementId.replace('-text', '-copy-success'));
+
+            navigator.clipboard.writeText(textarea.value).then(() => {
                 if (successSpan) {
                     successSpan.textContent = '✓ Copied!';
-                    setTimeout(() => {
-                        successSpan.textContent = '';
-                    }, 2000);
+                    setTimeout(() => { successSpan.textContent = ''; }, 2000);
                 }
-            } catch (err) {
-                // Fallback: use modern Clipboard API
-                navigator.clipboard.writeText(textarea.value).then(() => {
-                    const successSpan = document.getElementById(elementId.replace('-text', '-copy-success'));
+            }).catch(() => {
+                // Fallback for older browsers or insecure contexts
+                textarea.select();
+                textarea.setSelectionRange(0, 99999);
+                try {
+                    document.execCommand('copy');
                     if (successSpan) {
                         successSpan.textContent = '✓ Copied!';
-                        setTimeout(() => {
-                            successSpan.textContent = '';
-                        }, 2000);
+                        setTimeout(() => { successSpan.textContent = ''; }, 2000);
                     }
-                }).catch(err => {
+                } catch (err) {
                     alert('Failed to copy. Please select and copy manually.');
-                });
-            }
+                }
+            });
         }
     </script>
     <footer>
-        <p>For more technical articles, visit <a href="https://gergovadasz.hu" target="_blank" rel="noopener noreferrer">gergovadasz.hu</a></p>
+        <p>&gt; <a href="https://gergovadasz.hu" target="_blank" rel="noopener noreferrer">gergovadasz.hu</a></p>
     </footer>
 </body>
 </html>

@@ -35,6 +35,9 @@ ENV PATH=/root/.local/bin:$PATH
 # Expose port
 EXPOSE 8000
 
-# Use gunicorn to run the application directly (Alpine doesn't have bash)
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--timeout", "600", "app:app"]
+# Use gunicorn with production-tuned settings
+# --workers: Number of worker processes for isolation between users
+# --max-requests: Restart workers periodically to clear memory
+# --max-requests-jitter: Stagger worker restarts
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "--worker-class", "sync", "--timeout", "600", "--max-requests", "1000", "--max-requests-jitter", "100", "--preload", "app:app"]
 

@@ -2,12 +2,13 @@ from flask import Flask, render_template, request, jsonify
 import base64
 from cryptography import x509
 from cryptography.hazmat.primitives import serialization, hashes
-from cryptography.hazmat.primitives.asymmetric import rsa, padding
+from cryptography.hazmat.primitives.asymmetric import rsa, ec, padding
 from cryptography.hazmat.backends import default_backend
 from cryptography.x509.oid import NameOID, ExtensionOID
 import re
 import logging
 import io
+import os
 
 # Import pkcs12 functions - available in cryptography 3.0+
 try:
@@ -26,6 +27,9 @@ app.config['PERMANENT_SESSION_LIFETIME'] = 0  # No persistent sessions
 # SECURITY: Ensure no shared state between requests
 # Flask's request context is already isolated per request, but we explicitly disable sessions
 app.config['SESSION_TYPE'] = None
+
+# SECURITY: Limit request body size to prevent memory exhaustion
+app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024  # 1 MB
 
 # SECURITY: Configure logging to prevent sensitive data from being logged
 # Disable Flask's default request logging for security
@@ -47,24 +51,19 @@ class SensitiveDataFilter(logging.Filter):
 for handler in logging.root.handlers:
     handler.addFilter(SensitiveDataFilter())
 
-# SECURITY: Suppress request logging for sensitive endpoints
-@app.before_request
-def suppress_request_logging():
-    """Suppress request body logging for endpoints that handle private keys"""
-    if request.path == '/api/check-match':
-        # Temporarily disable werkzeug request logging for this endpoint
-        werkzeug_logger = logging.getLogger('werkzeug')
-        original_level = werkzeug_logger.level
-        werkzeug_logger.setLevel(logging.ERROR)
-        # Store original level in request context for restoration
-        request._original_log_level = original_level
+# Endpoints that handle private key material
+SENSITIVE_ENDPOINTS = {'/api/check-match', '/api/convert-certificate'}
 
 @app.after_request
-def restore_request_logging(response):
-    """Restore logging level after processing sensitive endpoints"""
-    if hasattr(request, '_original_log_level'):
-        werkzeug_logger = logging.getLogger('werkzeug')
-        werkzeug_logger.setLevel(request._original_log_level)
+def set_security_headers(response):
+    """Set security headers on all responses and prevent caching of sensitive data"""
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    # Prevent caching of responses from endpoints that handle private keys
+    if request.path in SENSITIVE_ENDPOINTS:
+        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+        response.headers['Pragma'] = 'no-cache'
     return response
 
 def detect_input_type(text):
@@ -255,31 +254,27 @@ def parse_private_key(key_text):
             raise
         raise Exception(f"Failed to parse private key: {str(e)}")
 
-def secure_memory_overwrite(data):
+def secure_cleanup(*refs):
     """
-    SECURITY: Attempt to overwrite memory containing sensitive data.
-    Note: Python's memory management makes this difficult, but we try.
+    SECURITY: Delete references to sensitive data and prompt garbage collection.
+
+    IMPORTANT LIMITATION: Python strings are immutable and cannot be overwritten
+    in-place. Calling del only removes the reference; the actual memory is freed
+    when the garbage collector runs. For true secure memory handling, private keys
+    should be processed by native C libraries (which the cryptography library does
+    internally for key objects). This function ensures references are dropped
+    promptly and gc.collect() is called to minimize the window of exposure.
+
+    For maximum security, run this application locally or in an isolated container
+    rather than on shared infrastructure.
     """
-    if isinstance(data, str):
-        # Convert to bytes for overwriting
-        data_bytes = data.encode('utf-8')
-        # Try to overwrite the bytes
+    import gc
+    for ref in refs:
         try:
-            # Create a buffer and overwrite it
-            buffer = bytearray(data_bytes)
-            buffer[:] = b'\x00' * len(buffer)
-            del buffer
+            del ref
         except:
             pass
-    elif isinstance(data, bytes):
-        try:
-            buffer = bytearray(data)
-            buffer[:] = b'\x00' * len(buffer)
-            del buffer
-        except:
-            pass
-    # Force garbage collection hint
-    del data
+    gc.collect()
 
 def check_certificate_key_match(cert_text, key_text):
     """
@@ -290,83 +285,45 @@ def check_certificate_key_match(cert_text, key_text):
     Each request is completely isolated - no shared state between users.
     All sensitive data is cleared from memory after processing.
     """
-    # SECURITY: Create local copies to ensure isolation from request context
-    local_key_text = str(key_text)
-    local_cert_text = str(cert_text)
-    
     try:
         # Parse certificate
-        cert_text_clean = re.sub(r'-----BEGIN CERTIFICATE-----', '', local_cert_text)
+        cert_text_clean = re.sub(r'-----BEGIN CERTIFICATE-----', '', cert_text)
         cert_text_clean = re.sub(r'-----END CERTIFICATE-----', '', cert_text_clean)
         cert_text_clean = re.sub(r'-----BEGIN X509 CERTIFICATE-----', '', cert_text_clean)
         cert_text_clean = re.sub(r'-----END X509 CERTIFICATE-----', '', cert_text_clean)
         cert_text_clean = ''.join(cert_text_clean.split())
         cert_der = base64.b64decode(cert_text_clean)
         cert = x509.load_der_x509_certificate(cert_der, default_backend())
-        
-        # SECURITY: Clear certificate data from memory
-        secure_memory_overwrite(cert_text_clean)
-        secure_memory_overwrite(cert_der)
-        
+
         # Parse private key
-        private_key, _ = parse_private_key(local_key_text)
-        
-        # Get public key from certificate
-        cert_public_key = cert.public_key()
-        
-        # Get public key from private key
-        key_public_key = private_key.public_key()
-        
-        # Compare public keys
-        cert_public_numbers = cert_public_key.public_numbers()
-        key_public_numbers = key_public_key.public_numbers()
-        
-        if isinstance(cert_public_key, rsa.RSAPublicKey) and isinstance(key_public_key, rsa.RSAPublicKey):
-            match = (cert_public_numbers.n == key_public_numbers.n and 
-                    cert_public_numbers.e == key_public_numbers.e)
-        else:
-            # For other key types, try to sign/verify
-            test_data = b"test"
-            signature = private_key.sign(
-                test_data,
-                padding.PKCS1v15(),
-                hashes.SHA256()
-            )
-            try:
-                cert_public_key.verify(
-                    signature,
-                    test_data,
-                    padding.PKCS1v15(),
-                    hashes.SHA256()
-                )
-                match = True
-            except:
-                match = False
-        
-        # SECURITY: Explicitly clear ALL sensitive data from memory
-        # Clear private key object
-        del private_key
-        del key_public_key
-        del cert_public_key
-        del cert_public_numbers
-        del key_public_numbers
-        del cert
-        
-        # Overwrite sensitive string data
-        secure_memory_overwrite(local_key_text)
-        secure_memory_overwrite(local_cert_text)
-        secure_memory_overwrite(cert_text_clean)
-        
+        private_key, _ = parse_private_key(key_text)
+
+        # Universal approach: compare serialized public keys
+        # Works for RSA, EC, Ed25519, and any other key type
+        cert_pub_bytes = cert.public_key().public_bytes(
+            serialization.Encoding.PEM,
+            serialization.PublicFormat.SubjectPublicKeyInfo
+        )
+        key_pub_bytes = private_key.public_key().public_bytes(
+            serialization.Encoding.PEM,
+            serialization.PublicFormat.SubjectPublicKeyInfo
+        )
+        match = cert_pub_bytes == key_pub_bytes
+
         return {
             'success': True,
             'match': match,
             'message': 'Certificate and private key match' if match else 'Certificate and private key do NOT match'
         }
     except Exception as e:
-        # SECURITY: Ensure ALL sensitive data is cleared even on error
-        secure_memory_overwrite(local_key_text)
-        secure_memory_overwrite(local_cert_text)
         return {'success': False, 'error': str(e)}
+    finally:
+        # SECURITY: Drop all references to sensitive data and prompt GC
+        secure_cleanup(
+            locals().get('private_key'),
+            locals().get('cert_der'),
+            locals().get('cert_text_clean'),
+        )
 
 def parse_csr(csr_text):
     """Parse CSR and extract information"""
@@ -462,6 +419,9 @@ def parse_csr(csr_text):
         if isinstance(public_key, rsa.RSAPublicKey):
             key_size = public_key.key_size
             key_type = 'RSA'
+        elif isinstance(public_key, ec.EllipticCurvePublicKey):
+            key_size = public_key.key_size
+            key_type = 'EC'
         else:
             key_size = None
             key_type = 'Unknown'
@@ -510,33 +470,14 @@ def check_match():
     - Each request is completely isolated - no shared state between concurrent users
     - Flask's request context ensures isolation between requests
     """
-    # SECURITY: Extract data immediately and create local copies for isolation
     try:
         request_data = request.get_json()
         cert_text = request_data.get('certificate', '') if request_data else ''
         key_text = request_data.get('private_key', '') if request_data else ''
-        
-        # SECURITY: Process in isolated function with local copies
+
         result = check_certificate_key_match(cert_text, key_text)
-        
-        # SECURITY: Clear request data from memory
-        secure_memory_overwrite(key_text)
-        secure_memory_overwrite(cert_text)
-        del request_data
-        
         return jsonify(result)
     except Exception as e:
-        # SECURITY: Ensure ALL sensitive data is cleared even on error
-        try:
-            if 'key_text' in locals():
-                secure_memory_overwrite(key_text)
-            if 'cert_text' in locals():
-                secure_memory_overwrite(cert_text)
-            if 'request_data' in locals():
-                del request_data
-        except:
-            pass
-        
         # Provide user-friendly error messages
         error_msg = str(e)
         if 'private key appears to be empty' in error_msg.lower():
@@ -583,19 +524,21 @@ def convert_certificate():
                 else:
                     input_format = 'der'
             elif input_format == 'unknown':
-                # Try to detect PFX/P12
-                try:
-                    # PFX/P12 files are binary, but might be base64 encoded
-                    pfx_data = input_data
-                    if 'BEGIN' not in input_data.upper():
-                        # Might be base64 encoded PFX
-                        pfx_data = base64.b64decode(input_data)
-                    else:
-                        return jsonify({'success': False, 'error': 'Could not detect input format. Please specify the format manually.'})
-                    input_format = 'pfx'
-                    input_data = base64.b64encode(pfx_data).decode('utf-8')
-                except:
+                if 'BEGIN' in input_data.upper():
                     return jsonify({'success': False, 'error': 'Could not detect input format. Please specify the format manually.'})
+                # No PEM headers: try DER first, then PFX
+                try:
+                    raw = base64.b64decode(input_data)
+                except Exception:
+                    return jsonify({'success': False, 'error': 'Could not detect input format. Please specify the format manually.'})
+                # Try parsing as DER certificate first
+                try:
+                    x509.load_der_x509_certificate(raw, default_backend())
+                    input_format = 'der'
+                except Exception:
+                    # Not a DER cert, assume PFX/P12
+                    input_format = 'pfx'
+                    input_data = base64.b64encode(raw).decode('utf-8')
         
         # Load certificate based on input format
         cert = None
@@ -631,17 +574,38 @@ def convert_certificate():
                 return jsonify({'success': False, 'error': f'Failed to load PFX/P12 file: {str(e)}'})
         
         elif input_format == 'pem':
-            # Handle PEM format
+            # Handle PEM format — extract certificates and private key separately
             try:
-                cert_text_clean = re.sub(r'-----BEGIN CERTIFICATE-----', '', input_data)
-                cert_text_clean = re.sub(r'-----END CERTIFICATE-----', '', cert_text_clean)
-                cert_text_clean = re.sub(r'-----BEGIN X509 CERTIFICATE-----', '', cert_text_clean)
-                cert_text_clean = re.sub(r'-----END X509 CERTIFICATE-----', '', cert_text_clean)
-                cert_text_clean = ''.join(cert_text_clean.split())
-                cert_der = base64.b64decode(cert_text_clean)
+                # Find all certificate blocks
+                cert_matches = re.findall(
+                    r'-----BEGIN (?:X509 )?CERTIFICATE-----\s*(.+?)\s*-----END (?:X509 )?CERTIFICATE-----',
+                    input_data, re.DOTALL
+                )
+                if not cert_matches:
+                    return jsonify({'success': False, 'error': 'No certificate found in PEM input. Make sure the input contains a -----BEGIN CERTIFICATE----- block.'})
+
+                # Parse the first certificate as the primary cert
+                cert_der = base64.b64decode(''.join(cert_matches[0].split()))
                 cert = x509.load_der_x509_certificate(cert_der, default_backend())
+
+                # Any additional certificates go into the chain
+                for extra_match in cert_matches[1:]:
+                    extra_der = base64.b64decode(''.join(extra_match.split()))
+                    additional_certs.append(x509.load_der_x509_certificate(extra_der, default_backend()))
+
+                # Find a private key block (RSA, EC, or PKCS8)
+                key_match = re.search(
+                    r'-----BEGIN (?:RSA |EC )?PRIVATE KEY-----\s*(.+?)\s*-----END (?:RSA |EC )?PRIVATE KEY-----',
+                    input_data, re.DOTALL
+                )
+                if key_match:
+                    # Reconstruct full PEM for the key so the library can detect the type
+                    key_pem_lines = key_match.group(0)
+                    private_key = serialization.load_pem_private_key(
+                        key_pem_lines.encode(), password=None, backend=default_backend()
+                    )
             except Exception as e:
-                return jsonify({'success': False, 'error': f'Failed to parse PEM certificate: {str(e)}'})
+                return jsonify({'success': False, 'error': f'Failed to parse PEM input: {str(e)}'})
         
         elif input_format == 'der' or input_format == 'crt':
             # Handle DER/CRT format (binary)
@@ -715,17 +679,7 @@ def convert_certificate():
         # Store values before cleanup
         has_private_key = private_key is not None
         has_additional_certs = len(additional_certs) > 0
-        
-        # SECURITY: Clear sensitive data
-        secure_memory_overwrite(input_data)
-        if password:
-            secure_memory_overwrite(password)
-        del cert
-        if private_key is not None:
-            del private_key
-        if additional_certs:
-            del additional_certs
-        
+
         response_data = {
             'success': True,
             'output_data': output_data,
@@ -733,19 +687,25 @@ def convert_certificate():
             'has_private_key': has_private_key,
             'has_additional_certs': has_additional_certs
         }
-        
+
         # Include private key data if available
         if output_key_data:
             response_data['output_key_data'] = output_key_data
-        
+
         return jsonify(response_data)
-    
+
     except Exception as e:
         return jsonify({'success': False, 'error': f'Conversion failed: {str(e)}'})
+    finally:
+        # SECURITY: Drop references to sensitive data and prompt GC
+        secure_cleanup(
+            locals().get('private_key'),
+            locals().get('input_data'),
+            locals().get('password'),
+            locals().get('additional_certs'),
+        )
 
 if __name__ == '__main__':
-    # SECURITY NOTE: In production, set debug=False
-    # Debug mode can expose sensitive information in error pages
-    # For production, use: app.run(host='0.0.0.0', port=8000, debug=False)
-    app.run(host='0.0.0.0', port=8000, debug=True)
+    debug = os.environ.get('FLASK_DEBUG', 'false').lower() == 'true'
+    app.run(host='0.0.0.0', port=8000, debug=debug)
 

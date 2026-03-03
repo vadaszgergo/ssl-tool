@@ -12,9 +12,13 @@ dist/
 build/
 .git/
 .gitignore
+.dockerignore
+.claude/
 .DS_Store
 *.log
+*.md
 .pytest_cache/
 .coverage
 htmlcov/
+generate_test_data.py
 
